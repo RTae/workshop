@@ -85,7 +85,7 @@ func (h handler) GetByID(c echo.Context) error {
 				ErrorResponse{Message: err.Error()},
 			)
 		}
-		match, errMatch = regexp.MatchString("No rows in result set", err.Error())
+		match, errMatch = regexp.MatchString("no rows in result set", err.Error())
 		if match {
 			logger.Error("Record not found", zap.Error(err))
 			return c.JSON(

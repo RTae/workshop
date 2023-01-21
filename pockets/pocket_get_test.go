@@ -185,7 +185,7 @@ func TestGetPocketByID_Error(t *testing.T) {
 				}
 				mock.ExpectQuery(gbiStmt).
 					WithArgs("1").
-					WillReturnError(errors.New("No rows in result set"))
+					WillReturnError(errors.New("no rows in result set"))
 				return db, err
 			},
 			"1",
