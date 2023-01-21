@@ -11,7 +11,7 @@ import (
 
 type Pocket struct {
 	ID        uint    `json:"id"`
-	Ammount   float64 `json:"ammount"`
+	Amount    float64 `json:"amount"`
 	Name      string  `json:"name"`
 	AccountId uint    `json:"accountId"`
 }
@@ -28,12 +28,12 @@ func New(db *sql.DB) *handler {
 	return &handler{db}
 }
 
-const gStmt = "SELECT id, ammount, name, account_id FROM pockets;"
+const gStmt = `SELECT id, amount, name, "accountId" FROM tbl_pockets;`
 
 func (h handler) Get(c echo.Context) error {
 	logger := mlog.L(c)
 	ctx := c.Request().Context()
-	var pockets []Pocket
+	var pockets []Pocket = []Pocket{}
 	rows, err := h.db.QueryContext(ctx, gStmt)
 	if err != nil {
 		logger.Error("query error", zap.Error(err))
@@ -42,7 +42,7 @@ func (h handler) Get(c echo.Context) error {
 	defer rows.Close()
 	for rows.Next() {
 		var pocket Pocket
-		err = rows.Scan(&pocket.ID, &pocket.Ammount, &pocket.Name, &pocket.AccountId)
+		err = rows.Scan(&pocket.ID, &pocket.Amount, &pocket.Name, &pocket.AccountId)
 		if err != nil {
 			logger.Error("scan error", zap.Error(err))
 			return c.JSON(http.StatusInternalServerError, ErrorResponse{Message: err.Error()})
