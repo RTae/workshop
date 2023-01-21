@@ -2,7 +2,7 @@ CREATE SEQUENCE IF NOT EXISTS account_id;
 
 CREATE TABLE IF NOT EXISTS TBL_Accounts (
     "id" int4 NOT NULL DEFAULT nextval('account_id'::regclass),
-    "balance" float8 NOT NULL DEFAULT 0,
+    "name" varchar(255) NOT NULL,
     PRIMARY KEY ("id")
 );
 
