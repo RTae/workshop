@@ -15,3 +15,15 @@ CREATE TABLE IF NOT EXISTS TBL_Pockets (
     "amount" float8 NOT NULL DEFAULT 0,
     PRIMARY KEY ("id")
 );
+
+CREATE SEQUENCE IF NOT EXISTS transaction_id;
+
+CREATE TABLE IF NOT EXISTS TBL_Transactions (
+    "id" int4 NOT NULL DEFAULT nextval('transaction_id'::regclass),
+    "accountId" int4 REFERENCES "accounts" ("id"),
+    "fromPocketId" int4 REFERENCES "pockets" ("id"),
+    "toPocketId" int4 REFERENCES "pockets" ("id"),
+    "amount" float8 NOT NULL,
+    "date" timestamp NOT NULL DEFAULT now(),
+    PRIMARY KEY ("id")
+);
