@@ -56,7 +56,7 @@ func (h handler) Get(c echo.Context) error {
 	return c.JSON(http.StatusOK, ps)
 }
 
-func (h handler) GetById(c echo.Context) error {
+func (h handler) GetByID(c echo.Context) error {
 	logger := mlog.L(c)
 	ctx := c.Request().Context()
 
