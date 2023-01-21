@@ -35,6 +35,7 @@ const (
 )
 
 func (h handler) Get(c echo.Context) error {
+
 	logger := mlog.L(c)
 	ctx := c.Request().Context()
 	var ps []Pocket = []Pocket{}
