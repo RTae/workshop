@@ -39,7 +39,7 @@ func RegRoute(cfg config.Config, logger *zap.Logger, db *sql.DB) *echo.Echo {
 	e.GET("/features", hFeatFlag.List)
 
 	hTransaction := transaction.New(cfg.FeatureFlag, db)
-	e.GET("/transactions", hTransaction.GetAll)
+	e.GET("/pockets/:id/transactions", hTransaction.GetAll)
 
 	return e
 }

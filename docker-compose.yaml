@@ -5,6 +5,7 @@ version: '3.2'
 services:
   db:
     image: postgres:12.12
+    platform: linux/amd64
     user: postgres
     environment:
       POSTGRES_USER: postgres
