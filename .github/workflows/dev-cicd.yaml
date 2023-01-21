@@ -14,7 +14,7 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v3
-      
+
       - name: Setup SHA
         run: echo "GITHUB_SHA=${GITHUB_SHA}" >> $GITHUB_ENV
 
@@ -23,12 +23,12 @@ jobs:
 
       - name: Integration test inside Docker-compose
         run: make test-integration
-      
+
       - name: E2E test inside Docker-compose
         run: make test-e2e
 
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag ghcr.io/<your-github-account>/workshop:${{ env.GITHUB_SHA }}
+        run: docker build . --file Dockerfile --tag ghcr.io/rtae/workshop:${{ env.GITHUB_SHA }}
 
       - name: Login ghcr.io
         uses: docker/login-action@v2.1.0
@@ -37,13 +37,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.WORKFLOW_TOKEN }}
           logout: true
-      
+
       - name: Push to GitHub Container Registry
         uses: docker/build-push-action@v3.2.0
         with:
           context: .
           tags: |
-            ghcr.io/<your-github-account>/workshop:${{ env.GITHUB_SHA }}
+            ghcr.io/rtae/workshop:${{ env.GITHUB_SHA }}
           push: true
 
       - name: Image digest
@@ -66,11 +66,11 @@ jobs:
           git --version
           git config user.name "robot"
           git config user.email "root@aorjoa.link"
-        
+
       - name: change image tag to deploy dev
         if: ${{ github.ref == 'refs/heads/main' }}
         run: |
-          sed -i -E "s/ghcr.io\/<your-github-account>\/workshop.*$/ghcr.io\/<your-github-account>\/workshop:${GITHUB_SHA}/" infra/gitops/dev/deployment.yml
+          sed -i -E "s/ghcr.io\/rtae\/workshop.*$/ghcr.io\/rtae\/workshop:${GITHUB_SHA}/" infra/gitops/dev/deployment.yml
           git add infra/gitops/dev/deployment.yml
           git commit -m "[skip actions] 🤖 change dev docker image version to ${GITHUB_SHA}"
           git pull --rebase
@@ -79,7 +79,7 @@ jobs:
       - name: change image tag to deploy hotfix
         if: ${{ github.ref == 'refs/heads/hotfix' }}
         run: |
-          sed -i -E "s/ghcr.io\/<your-github-account>\/workshop.*$/ghcr.io\/<your-github-account>\/workshop:${GITHUB_SHA}/" infra/gitops/hotfix/deployment.yml
+          sed -i -E "s/ghcr.io\/rtae\/workshop.*$/ghcr.io\/rtae\/workshop:${GITHUB_SHA}/" infra/gitops/hotfix/deployment.yml
           git add infra/gitops/hotfix/deployment.yml
           git commit -m "[skip actions] 🤖 change hotfix docker image version to ${GITHUB_SHA}"
           git pull --rebase

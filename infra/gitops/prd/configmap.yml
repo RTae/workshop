@@ -4,7 +4,7 @@ metadata:
   name: app-env-config
   namespace: workshop-prd
 data:
-  HOSTNAME: ''
-  PORT: '1323'
-  FLAG_IS_LIMIT_MAX_SPEND_ON_CREATE: 'true'
-  DB_CONNECTION: '<DB_CONNECTION_PRD>'
+  HOSTNAME: ""
+  PORT: "1323"
+  FLAG_IS_LIMIT_MAX_SPEND_ON_CREATE: "true"
+  DB_CONNECTION: "postgresql://group-5:group-5-pass@database-1.c7bdavepehea.ap-southeast-1.rds.amazonaws.com/group-5-prd"

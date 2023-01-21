@@ -4,15 +4,15 @@ on:
   workflow_dispatch:
     inputs:
       test:
-        description: '🔦 QA lead already approved'
+        description: "🔦 QA lead already approved"
         required: true
         type: boolean
       sign-off:
-        description: '📝 Make sure PO sign-off'
+        description: "📝 Make sure PO sign-off"
         required: true
         type: boolean
       deploy-tag:
-        description: '🎯 Deploy docker tag'
+        description: "🎯 Deploy docker tag"
         required: true
         type: string
         default: c9f6b38c1acd0a7153e42a03b577757262075eb3
@@ -22,13 +22,13 @@ jobs:
   # CD Prd task
   # ==============
   gitops-prd-versioning:
-    runs-on: ubuntu-latest 
+    runs-on: ubuntu-latest
     steps:
       - name: verify manual input
         run: |
           { if [ '${{ inputs.test }}' = 'false' ]; then echo "🔦 QA lead not approve yet"; exit 1; fi }
           { if [ '${{ inputs.sign-off }}' = 'false' ]; then echo "📝 Need PO sign-off"; exit 1; fi }
-        
+
       - name: checkout
         uses: actions/checkout@v3
         with:
@@ -39,10 +39,10 @@ jobs:
           git --version
           git config user.name "robot"
           git config user.email "root@aorjoa.link"
-        
+
       - name: change image tag
         run: |
-          sed -i -E "s/ghcr.io\/<your-github-account>\/workshop.*$/ghcr.io\/<your-github-account>\/workshop:${{ inputs.deploy-tag }}/" infra/gitops/prd/deployment.yml
+          sed -i -E "s/ghcr.io\/rtae\/workshop.*$/ghcr.io\/rtae\/workshop:${{ inputs.deploy-tag }}/" infra/gitops/prd/deployment.yml
           git add infra/gitops/prd/deployment.yml
           git commit -m "[skip actions] 🤖 change prd docker image version to ${{ inputs.deploy-tag }}"
           git pull --rebase
