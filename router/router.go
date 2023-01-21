@@ -10,6 +10,7 @@ import (
 	"github.com/kkgo-software-engineering/workshop/healthchk"
 	mw "github.com/kkgo-software-engineering/workshop/middleware"
 	"github.com/kkgo-software-engineering/workshop/mlog"
+	pocket "github.com/kkgo-software-engineering/workshop/pockets"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"go.uber.org/zap"
@@ -29,6 +30,9 @@ func RegRoute(cfg config.Config, logger *zap.Logger, db *sql.DB) *echo.Echo {
 
 	hAccount := account.New(cfg.FeatureFlag, db)
 	e.POST("/accounts", hAccount.Create)
+
+	hPocket := pocket.New(db)
+	e.GET("/pockets", hPocket.Get)
 
 	hFeatFlag := featflag.New(cfg)
 	e.GET("/features", hFeatFlag.List)

@@ -25,7 +25,7 @@ func New(cfgFlag config.FeatureFlag, db *sql.DB) *handler {
 }
 
 const (
-	cStmt         = "INSERT INTO accounts (balance) VALUES ($1) RETURNING id;"
+	cStmt         = "INSERT INTO tbl_accounts (balance) VALUES ($1) RETURNING id;"
 	cBalanceLimit = 10000
 )
 
