@@ -227,7 +227,7 @@ make test-unit
 ### ⚙️ Integration
 
 ```console
-make test-ingegration
+make test-integration
 ```
 
 ### 🤖 End-to-End
