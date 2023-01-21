@@ -33,6 +33,7 @@ func RegRoute(cfg config.Config, logger *zap.Logger, db *sql.DB) *echo.Echo {
 
 	hPocket := pocket.New(db)
 	e.GET("/pockets", hPocket.Get)
+	e.GET("/pockets/:id", hPocket.GetByID)
 
 	hFeatFlag := featflag.New(cfg)
 	e.GET("/features", hFeatFlag.List)

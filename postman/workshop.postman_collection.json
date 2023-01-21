@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "4f57912e-80b7-4479-a900-24f0efe7ab10",
+		"_postman_id": "a5946135-0317-4045-aba4-ba281a19db14",
 		"name": "workshop",
 		"description": "Workshop's Swagger specification",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "2239694"
+		"_exporter_id": "17185211"
 	},
 	"item": [
 		{
@@ -109,6 +109,90 @@
 			]
 		},
 		{
+			"name": "pocket",
+			"item": [
+				{
+					"name": "get all pockets",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"should response success(200) and object of latest expense\", function () {",
+									"    var allPocket = pm.response.json();",
+									"    var len = allPocket.length;",
+									"    ",
+									"    pm.expect(len).to.be.above(0, \"pocket should not be empty\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/pockets",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"pockets"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get pocket",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"should response success(200) and object of latest expense\", function () {",
+									"    var pocket = pm.response.json();",
+									"    ",
+									"    pm.expect(pocket.id.toString()).to.not.eq(\"\")",
+									"    pm.expect(pocket.amount).to.not.eql(0, \"amount should not be zero\");",
+									"    pm.expect(pocket.name.toString()).to.not.eq(\"\", \"name should not be empty\")",
+									"    pm.expect(pocket.accountId.toString()).to.not.eq(\"\")",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/pockets/1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"pockets",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "get feature flag",
 			"event": [
 				{
@@ -146,6 +230,41 @@
 				}
 			},
 			"response": []
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "secret",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "admin",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
 		}
 	]
 }
