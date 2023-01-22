@@ -220,6 +220,57 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "create pocket",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var pocket = JSON.parse(responseBody);",
+									"console.log(pocket);",
+									"",
+									"pm.test(\"should response success(201) and object of customer\", function () {",
+									"    var response = pm.response.json();",
+									"    pm.expect(response.id).to.not.eql(0);",
+									"    pm.expect(response.amount).to.eql(0);",
+									"    pm.expect(response.name).to.eql(\"test\");",
+									"    pm.expect(response.accountId).to.eql(2);",
+									"    pm.expect(response.currency).to.eql(\"THB\");",
+									"});",
+									"",
+									"pm.test(\"Status code is 201 or 202\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([201,202]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 0,\n    \"name\": \"test\",\n    \"accountId\": 2,\n    \"currency\": \"\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/pockets",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"pockets"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
