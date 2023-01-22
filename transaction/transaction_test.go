@@ -43,7 +43,7 @@ func TestGetTransactions(t *testing.T) {
 					From:   12345,
 					To:     67890,
 					Amount: 50.0,
-					Date:   time.Now(),
+					Date:   time.Now().String(),
 				},
 			},
 		},

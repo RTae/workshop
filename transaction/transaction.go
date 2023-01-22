@@ -3,7 +3,6 @@ package transaction
 import (
 	"database/sql"
 	"net/http"
-	"time"
 
 	"github.com/kkgo-software-engineering/workshop/config"
 	"github.com/kkgo-software-engineering/workshop/mlog"
@@ -11,17 +10,21 @@ import (
 	"go.uber.org/zap"
 )
 
+const (
+	gStmt = `SELECT * FROM tbl_transactions WHERE "fromPocketId" = $1 OR "toPocketId" = $2`
+)
+
 type Transaction struct {
-	ID     int64     `json:"id"`
-	From   int64     `json:"from"`
-	To     int64     `json:"to"`
-	Amount float64   `json:"amount"`
-	Date   time.Time `json:"date"`
+	ID     uint    `json:"id"`
+	From   uint    `json:"from"`
+	To     uint    `json:"to"`
+	Amount float64 `json:"amount"`
+	Date   string  `json:"date"`
 }
 
-const (
-	cStmt = `SELECT * FROM tbl_transactions WHERE "fromPocketId" = $1 OR "toPocketId" = $2`
-)
+type Err struct {
+	Message string `json:"message"`
+}
 
 type handler struct {
 	cfg config.FeatureFlag
@@ -38,7 +41,7 @@ func (h handler) GetAll(c echo.Context) error {
 	pocketId := c.Param("id")
 	ctx := c.Request().Context()
 
-	rows, err := h.db.QueryContext(ctx, cStmt, pocketId, pocketId)
+	rows, err := h.db.QueryContext(ctx, gStmt, pocketId, pocketId)
 	if err != nil {
 		logger.Error("query transactions error", zap.Error(err))
 		return err

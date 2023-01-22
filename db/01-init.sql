@@ -20,7 +20,6 @@ CREATE SEQUENCE IF NOT EXISTS transaction_id;
 
 CREATE TABLE IF NOT EXISTS TBL_Transactions (
     "id" int4 NOT NULL DEFAULT nextval('transaction_id'::regclass),
-    "accountId" int4 REFERENCES "tbl_accounts" ("id"),
     "fromPocketId" int4 REFERENCES "tbl_pockets" ("id"),
     "toPocketId" int4 REFERENCES "tbl_pockets" ("id"),
     "amount" float8 NOT NULL,
