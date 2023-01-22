@@ -28,19 +28,20 @@ func TestGetPockets(t *testing.T) {
 				if err != nil {
 					return nil, err
 				}
-				row := sqlmock.NewRows([]string{"ID", "Amount", "Name", "AccountId"}).
+				row := sqlmock.NewRows([]string{"ID", "Amount", "Name", "AccountId", "Currency"}).
 					AddRow(
 						"1",
 						79.00,
 						"Test pocket",
 						"1",
+						"THB",
 					)
 				mock.ExpectQuery(gStmt).WillReturnRows(row)
 				return db, err
 			},
 			"",
 			http.StatusOK,
-			`[{"id": 1, "amount": 79.00, "name": "Test pocket", "accountId": 1}]`,
+			`[{"id": 1, "amount": 79.00, "name": "Test pocket", "accountId": 1, "currency": "THB"}]`,
 		},
 	}
 
@@ -118,19 +119,20 @@ func TestGetPocketByID(t *testing.T) {
 				if err != nil {
 					return nil, err
 				}
-				row := sqlmock.NewRows([]string{"ID", "Amount", "Name", "AccountId"}).
+				row := sqlmock.NewRows([]string{"ID", "Amount", "Name", "AccountId", "Currency"}).
 					AddRow(
 						"1",
 						79.00,
 						"Test pocket",
 						"1",
+						"THB",
 					)
 				mock.ExpectQuery(gbiStmt).WithArgs("1").WillReturnRows(row)
 				return db, err
 			},
 			"1",
 			http.StatusOK,
-			`{"id": 1, "amount": 79.00, "name": "Test pocket", "accountId": 1}`,
+			`{"id": 1, "amount": 79.00, "name": "Test pocket", "accountId": 1, "currency": "THB"}`,
 		},
 	}
 
