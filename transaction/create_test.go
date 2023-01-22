@@ -32,6 +32,22 @@ func TestCreateTransaction(t *testing.T) {
 			AddRow(1, 1, 2, 100.0, now)
 		mock.ExpectQuery(cStmt).WithArgs(1, 2, 100.0).WillReturnRows(row)
 
+		fromPocketRow := sqlmock.NewRows([]string{"id", "amount", "name", "accountId"}).
+			AddRow(1, 100.0, "Travel Pocket", 1)
+		mock.ExpectQuery(`SELECT id, amount, "name", "accountId" FROM tbl_pockets WHERE id = $1;`).WithArgs(1).WillReturnRows(fromPocketRow)
+
+		toPocketRow := sqlmock.NewRows([]string{"id", "amount", "name", "accountId"}).
+			AddRow(2, 100.0, "Shopping Pocket", 1)
+		mock.ExpectQuery(`SELECT id, amount, "name", "accountId" FROM tbl_pockets WHERE id = $1;`).WithArgs(2).WillReturnRows(toPocketRow)
+
+		updateFromPocket := sqlmock.NewRows([]string{"id", "amount"}).
+			AddRow(1, 100.0)
+		mock.ExpectQuery(`UPDATE TBL_Pockets SET amount = (amount - $2) WHERE id = $1 RETURNING id, amount;`).WithArgs(1, 100.0).WillReturnRows(updateFromPocket)
+
+		updateToPocket := sqlmock.NewRows([]string{"id", "amount"}).
+			AddRow(2, 100.0)
+		mock.ExpectQuery(`UPDATE TBL_Pockets SET amount = (amount + $2) WHERE id = $1 RETURNING id, amount;`).WithArgs(2, 100.0).WillReturnRows(updateToPocket)
+
 		// Act
 		h := New(config.FeatureFlag{}, db)
 
