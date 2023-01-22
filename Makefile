@@ -4,6 +4,9 @@ install:
 dev:
 	go run main.go
 
+dev-re:
+	re go run main.go
+
 dev-hotreload:
 	nodemon --exec go run main.go --signal SIGTERM
 

@@ -2,11 +2,21 @@ package transaction
 
 import (
 	"database/sql"
+	"fmt"
+	"net/http"
+	"time"
 
 	"github.com/kkgo-software-engineering/workshop/config"
+	"github.com/kkgo-software-engineering/workshop/mlog"
+	"github.com/labstack/echo/v4"
+	"go.uber.org/zap"
 )
 
-type Tranaction struct {
+const (
+	gStmt = `SELECT * FROM tbl_transactions WHERE "fromPocketId" = $1 OR "toPocketId" = $2`
+)
+
+type Transaction struct {
 	ID     uint    `json:"id"`
 	From   uint    `json:"from"`
 	To     uint    `json:"to"`
@@ -18,8 +28,6 @@ type Err struct {
 	Message string `json:"message"`
 }
 
-// POST  /pockets/:id/transfers
-
 type handler struct {
 	cfg config.FeatureFlag
 	db  *sql.DB
@@ -27,4 +35,32 @@ type handler struct {
 
 func New(cfgFlag config.FeatureFlag, db *sql.DB) *handler {
 	return &handler{cfgFlag, db}
+}
+
+func (h handler) GetAll(c echo.Context) error {
+	logger := mlog.L(c)
+
+	pocketId := c.Param("id")
+	ctx := c.Request().Context()
+
+	rows, err := h.db.QueryContext(ctx, gStmt, pocketId, pocketId)
+	if err != nil {
+		logger.Error("query transactions error", zap.Error(err))
+		return err
+	}
+
+	var txns []Transaction
+	for rows.Next() {
+		var t Transaction
+		var gotDate time.Time
+		err := rows.Scan(&t.ID, &t.From, &t.To, &t.Amount, &gotDate)
+		t.Date = gotDate.Format(time.RFC3339)
+		if err != nil {
+			fmt.Println("Test :::: ", err)
+			return c.JSON(http.StatusInternalServerError, zap.Error(err))
+		}
+		txns = append(txns, t)
+	}
+
+	return c.JSON(http.StatusOK, txns)
 }

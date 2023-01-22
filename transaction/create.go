@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	cStmt = `INSERT INTO TBL_Transactions (fromPocketId, toPocketId, amount) VALUES ($1, $2, $3) 
-	RETURNING id, fromPocketId, toPocketId, amount, date`
+	cStmt = `INSERT INTO TBL_Transactions ("fromPocketId", "toPocketId", amount) VALUES ($1, $2, $3) 
+	RETURNING id, "fromPocketId", "toPocketId", amount, date`
 )
 
 func (h handler) Create(c echo.Context) error {
@@ -26,7 +26,7 @@ func (h handler) Create(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, Err{Message: "bad request body"})
 	}
 
-	var tn Tranaction
+	var tn Transaction
 	err = c.Bind(&tn)
 
 	if err != nil {
@@ -45,8 +45,7 @@ func (h handler) Create(c echo.Context) error {
 	}
 
 	var txDate time.Time
-	row := h.db.QueryRowContext(ctx, `INSERT INTO TBL_Transactions (fromPocketId, toPocketId, amount) VALUES ($1, $2, $3) 
-		RETURNING id, fromPocketId, toPocketId, amount, date`, uint(from), tn.To, tn.Amount)
+	row := h.db.QueryRowContext(ctx, cStmt, uint(from), tn.To, tn.Amount)
 	err = row.Scan(&tn.ID, &tn.From, &tn.To, &tn.Amount, &txDate)
 
 	tn.Date = txDate.Format(time.RFC3339)

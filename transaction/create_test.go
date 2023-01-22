@@ -19,11 +19,11 @@ func TestCreateTransaction(t *testing.T) {
 	t.Run("create transaction succesfully", func(t *testing.T) {
 		// Arrange
 		e := echo.New()
-		req := httptest.NewRequest(http.MethodPost, "/pockets/1/transfers", strings.NewReader(`{"to": 2, "amount": 100.0}`))
+		req := httptest.NewRequest(http.MethodPost, "/pockets/1/transfer", strings.NewReader(`{"to": 2, "amount": 100.0}`))
 		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
-		c.SetPath("/pockets/:id/transfers")
+		c.SetPath("/pockets/:id/transfer")
 		c.SetParamNames("id")
 		c.SetParamValues("1")
 
@@ -65,7 +65,7 @@ func TestCreateTransaction_Error(t *testing.T) {
 
 		h := New(config.FeatureFlag{}, db)
 		c := e.NewContext(req, rec)
-		c.SetPath("/pockets/:id/transfers")
+		c.SetPath("/pockets/:id/transfer")
 		c.SetParamNames("id")
 		c.SetParamValues("")
 
@@ -96,7 +96,7 @@ func TestCreateTransaction_Error(t *testing.T) {
 
 		h := New(config.FeatureFlag{}, db)
 		c := e.NewContext(req, rec)
-		c.SetPath("/pockets/:id/transfers")
+		c.SetPath("/pockets/:id/transfer")
 		c.SetParamNames("id")
 		c.SetParamValues("1")
 
@@ -127,7 +127,7 @@ func TestCreateTransaction_Error(t *testing.T) {
 
 		h := New(config.FeatureFlag{}, db)
 		c := e.NewContext(req, rec)
-		c.SetPath("/pockets/:id/transfers")
+		c.SetPath("/pockets/:id/transfer")
 		c.SetParamNames("id")
 		c.SetParamValues("1")
 
