@@ -15,6 +15,7 @@ type Pocket struct {
 	Amount    float64 `json:"amount"`
 	Name      string  `json:"name"`
 	AccountId uint    `json:"accountId"`
+	Currency  string  `json:"currency"`
 }
 
 type handler struct {
@@ -30,8 +31,8 @@ func New(db *sql.DB) *handler {
 }
 
 const (
-	gStmt   = `SELECT id, amount, name, "accountId" FROM tbl_pockets;`
-	gbiStmt = `SELECT id, amount, name, "accountId" FROM tbl_pockets WHERE id = $1;`
+	gStmt   = `SELECT id, amount, name, "accountId", currency FROM tbl_pockets;`
+	gbiStmt = `SELECT id, amount, name, "accountId", currency FROM tbl_pockets WHERE id = $1;`
 )
 
 func (h handler) Get(c echo.Context) error {
@@ -46,13 +47,13 @@ func (h handler) Get(c echo.Context) error {
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var pocket Pocket
-		err = rows.Scan(&pocket.ID, &pocket.Amount, &pocket.Name, &pocket.AccountId)
+		var p Pocket
+		err = rows.Scan(&p.ID, &p.Amount, &p.Name, &p.AccountId, &p.Currency)
 		if err != nil {
 			logger.Error("Scan error", zap.Error(err))
 			return c.JSON(http.StatusInternalServerError, ErrorResponse{Message: err.Error()})
 		}
-		ps = append(ps, pocket)
+		ps = append(ps, p)
 	}
 	return c.JSON(http.StatusOK, ps)
 }
@@ -69,7 +70,7 @@ func (h handler) GetByID(c echo.Context) error {
 		)
 	}
 	var p Pocket
-	err := h.db.QueryRowContext(ctx, gbiStmt, id).Scan(&p.ID, &p.Amount, &p.Name, &p.AccountId)
+	err := h.db.QueryRowContext(ctx, gbiStmt, id).Scan(&p.ID, &p.Amount, &p.Name, &p.AccountId, &p.Currency)
 	if err != nil {
 		match, errMatch := regexp.MatchString("invalid input syntax", err.Error())
 		if match {
