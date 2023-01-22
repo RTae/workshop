@@ -40,6 +40,7 @@ func TestCreateTransaction(t *testing.T) {
 			AddRow(2, 100.0, "Shopping Pocket", 1)
 		mock.ExpectQuery(`SELECT id, amount, "name", "accountId" FROM tbl_pockets WHERE id = $1;`).WithArgs(2).WillReturnRows(toPocketRow)
 
+		mock.ExpectBegin()
 		updateFromPocket := sqlmock.NewRows([]string{"id", "amount"}).
 			AddRow(1, 100.0)
 		mock.ExpectQuery(`UPDATE TBL_Pockets SET amount = (amount - $2) WHERE id = $1 RETURNING id, amount;`).WithArgs(1, 100.0).WillReturnRows(updateFromPocket)
@@ -47,7 +48,7 @@ func TestCreateTransaction(t *testing.T) {
 		updateToPocket := sqlmock.NewRows([]string{"id", "amount"}).
 			AddRow(2, 100.0)
 		mock.ExpectQuery(`UPDATE TBL_Pockets SET amount = (amount + $2) WHERE id = $1 RETURNING id, amount;`).WithArgs(2, 100.0).WillReturnRows(updateToPocket)
-
+		mock.ExpectCommit()
 		// Act
 		h := New(config.FeatureFlag{}, db)
 
