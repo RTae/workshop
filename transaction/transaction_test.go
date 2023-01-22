@@ -15,6 +15,7 @@ import (
 )
 
 func TestGetTransactions(t *testing.T) {
+	now := time.Now()
 	tests := []struct {
 		name       string
 		cfgFlag    config.FeatureFlag
@@ -31,8 +32,9 @@ func TestGetTransactions(t *testing.T) {
 				if err != nil {
 					return nil, err
 				}
-				row := sqlmock.NewRows([]string{"id"}).AddRow(1)
-				mock.ExpectQuery(cStmt).WithArgs(1000.0).WillReturnRows(row)
+
+				row := sqlmock.NewRows([]string{"id", "from", "to", "amount", "date"}).AddRow(1, 12345, 67890, 50.0, now)
+				mock.ExpectQuery(gStmt).WithArgs("12345", "12345").WillReturnRows(row)
 				return db, err
 			},
 			``,
@@ -43,7 +45,7 @@ func TestGetTransactions(t *testing.T) {
 					From:   12345,
 					To:     67890,
 					Amount: 50.0,
-					Date:   time.Now().String(),
+					Date:   now.Format(time.RFC3339),
 				},
 			},
 		},
@@ -56,6 +58,10 @@ func TestGetTransactions(t *testing.T) {
 			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
+
+			c.SetPath("/pockets/:id/transactions")
+			c.SetParamNames("id")
+			c.SetParamValues("12345")
 
 			db, err := tc.sqlFn()
 			h := New(tc.cfgFlag, db)

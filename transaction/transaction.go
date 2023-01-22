@@ -2,7 +2,9 @@ package transaction
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/kkgo-software-engineering/workshop/config"
 	"github.com/kkgo-software-engineering/workshop/mlog"
@@ -50,9 +52,11 @@ func (h handler) GetAll(c echo.Context) error {
 	var txns []Transaction
 	for rows.Next() {
 		var t Transaction
-		err := rows.Scan(&t.ID, &t.From, &t.To, &t.Amount, &t.Date)
+		var gotDate time.Time
+		err := rows.Scan(&t.ID, &t.From, &t.To, &t.Amount, &gotDate)
+		t.Date = gotDate.Format(time.RFC3339)
 		if err != nil {
-
+			fmt.Println("Test :::: ", err)
 			return c.JSON(http.StatusInternalServerError, zap.Error(err))
 		}
 		txns = append(txns, t)

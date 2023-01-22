@@ -2,6 +2,9 @@ install:
 	go mod tidy
 
 dev:
+	go run main.go
+
+dev-re:
 	re go run main.go
 
 dev-hotreload:
