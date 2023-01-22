@@ -1,7 +1,6 @@
 package pocket
 
 import (
-	"database/sql"
 	"net/http"
 	"regexp"
 
@@ -9,26 +8,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
 )
-
-type Pocket struct {
-	ID        uint    `json:"id"`
-	Amount    float64 `json:"amount"`
-	Name      string  `json:"name"`
-	AccountId uint    `json:"accountId"`
-	Currency  string  `json:"currency"`
-}
-
-type handler struct {
-	db *sql.DB
-}
-
-type ErrorResponse struct {
-	Message string `json:"message"`
-}
-
-func New(db *sql.DB) *handler {
-	return &handler{db}
-}
 
 const (
 	gStmt   = `SELECT id, amount, name, "accountId", currency FROM tbl_pockets;`
