@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS TBL_Pockets (
     "name" varchar(255) NOT NULL,
     "amount" float8 NOT NULL DEFAULT 0,
     "currency" varchar(3) NOT NULL DEFAULT 'THB',
+    "deleteFlag" boolean NOT NULL DEFAULT false,
     PRIMARY KEY ("id")
 );
 

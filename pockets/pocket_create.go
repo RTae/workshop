@@ -26,6 +26,10 @@ func (h handler) Create(c echo.Context) error {
 		p.Currency = "THB"
 	}
 
+	if p.Amount > 0.0 {
+		p.Amount = 0.0
+	}
+
 	if len(p.Currency) != 3 {
 		logger.Error("Bad request body", zap.Error(err))
 		return c.JSON(http.StatusBadRequest, ErrorResponse{Message: "Currency must be 3 characters"})

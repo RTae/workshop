@@ -27,14 +27,14 @@ func TestCreatePocketIT(t *testing.T) {
 
 	e.POST("/pockets", hPocket.Create)
 
-	reqBody := `{"amount": 0.0, "name": "test", "accountId": 2, "currency": "THB"}`
+	reqBody := `{"amount": 0.0, "name": "test", "accountId": 1, "currency": "THB"}`
 	req := httptest.NewRequest(http.MethodPost, "/pockets", strings.NewReader(reqBody))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 
 	e.ServeHTTP(rec, req)
 
-	expected := `{"id": 1, "amount": 0.0, "name": "test", "accountId": 2, "currency": "THB"}`
+	expected := `{"id": 2, "amount": 0.0, "name": "test", "accountId": 1, "currency": "THB"}`
 	assert.Equal(t, http.StatusCreated, rec.Code)
 	assert.JSONEq(t, expected, rec.Body.String())
 }

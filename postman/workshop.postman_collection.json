@@ -21,7 +21,7 @@
 									"    pm.expect(pm.response.code).to.eq(201)",
 									"})",
 									"pm.test('expect created id equals to 1', function () {",
-									"     pm.expect(pm.response.json().id).to.eq(1)",
+									"     pm.expect(pm.response.json().id).to.eq(2)",
 									"})",
 									"pm.test('expect created balance equals to 999.0', function () {",
 									"     pm.expect(pm.response.json().balance).to.eq(999.0)",
@@ -184,7 +184,7 @@
 							],
 							"path": [
 								"pockets",
-								"2"
+								"1"
 							]
 						}
 					},

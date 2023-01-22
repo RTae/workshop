@@ -48,13 +48,13 @@ func TestGetPocketByIDIT(t *testing.T) {
 	hPocket := New(sql)
 	e.GET("/pockets/:id", hPocket.GetByID)
 
-	req := httptest.NewRequest(http.MethodGet, "/pockets/2", nil)
+	req := httptest.NewRequest(http.MethodGet, "/pockets/1", nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 
 	e.ServeHTTP(rec, req)
 
-	expected := `{"id": 2, "amount": 200.00, "name": "test_pocket", "accountId": 2, "currency": "THB"}`
+	expected := `{"id": 1, "amount": 200.00, "name": "test_pocket", "accountId": 1, "currency": "THB"}`
 	assert.Equal(t, http.StatusOK, rec.Code)
 	assert.JSONEq(t, expected, rec.Body.String())
 }
