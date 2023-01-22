@@ -10,6 +10,7 @@ import (
 
 	"github.com/kkgo-software-engineering/workshop/mlog"
 	"github.com/labstack/echo/v4"
+	"github.com/shopspring/decimal"
 	"go.uber.org/zap"
 
 	pocket "github.com/kkgo-software-engineering/workshop/pockets"
@@ -57,7 +58,7 @@ func (h handler) Create(c echo.Context) error {
 
 	if err != nil {
 		logger.Error("Cannot insert transactions", zap.Error(err))
-		return c.JSON(http.StatusInternalServerError, Err{Message: fmt.Sprint("Cannot insert transactions ", err.Error())})
+		return c.JSON(http.StatusInternalServerError, Err{Message: "Cannot insert transactions"})
 	}
 
 	// Get From Pocket By Id
@@ -76,35 +77,45 @@ func (h handler) Create(c echo.Context) error {
 	tx, err := h.db.Begin()
 	if err != nil {
 		logger.Error("Cannot begin transactions", zap.Error(err))
-		return c.JSON(http.StatusInternalServerError, Err{Message: fmt.Sprint("Cannot begin transactions ", err.Error())})
+		return c.JSON(http.StatusInternalServerError, Err{Message: "Cannot begin transactions"})
 	}
-	_, err = updateAmountFromPocketById(c, tx, fp, tn.Amount)
+	txAmount := decimal.NewFromFloat(tn.Amount)
+	// fp.Amount = fp.Amount - tn.Amount
+	fromAmount := decimal.NewFromFloat(fp.Amount)
+	fromAmount = fromAmount.Sub(txAmount)
+	fmt.Println(fromAmount.InexactFloat64())
+	_, err = updateAmountPocketById(c, tx, fp, fromAmount.InexactFloat64())
 	if err != nil {
 		return err
 	}
 
 	// // // Increase To Pocket Amount
 	// tp.Amount = tp.Amount + tn.Amount
-	_, err = updateAmountToPocketById(c, tx, tp, tn.Amount)
+	toAmount := decimal.NewFromFloat(tp.Amount)
+	toAmount = decimal.Sum(toAmount, txAmount)
+	fmt.Println(toAmount.InexactFloat64())
+	_, err = updateAmountPocketById(c, tx, tp, toAmount.InexactFloat64())
 	if err != nil {
 		return err
 	}
 	if err = tx.Commit(); err != nil {
 		logger.Error("Cannot COMMIT transactions", zap.Error(err))
-		return c.JSON(http.StatusInternalServerError, Err{Message: fmt.Sprint("Cannot commit transactions ", err.Error())})
+		return c.JSON(http.StatusInternalServerError, Err{Message: "Cannot commit transactions"})
 	}
 
 	return c.JSON(http.StatusCreated, tn)
 }
 
-func updateAmountFromPocketById(c echo.Context, tx *sql.Tx, pocket *pocket.Pocket, amount float64) (*pocket.Pocket, error) {
+func updateAmountPocketById(c echo.Context, tx *sql.Tx, pocket *pocket.Pocket, amount float64) (*pocket.Pocket, error) {
 	logger := mlog.L(c)
 	ctx := c.Request().Context()
-
-	row := tx.QueryRowContext(ctx, "UPDATE TBL_Pockets SET amount = (amount - $2) WHERE id = $1 RETURNING id, amount;", pocket.ID, amount)
+	fmt.Println(amount)
+	row := tx.QueryRowContext(ctx, "UPDATE TBL_Pockets SET amount = $2 WHERE id = $1 RETURNING id, amount", pocket.ID, amount)
 	err := row.Scan(&pocket.ID, &pocket.Amount)
 	if err != nil {
+		fmt.Println(err.Error())
 		tx.Rollback()
+
 		logger.Error("cannot update pocket", zap.Error(err))
 		return nil, c.JSON(http.StatusInternalServerError, Err{Message: "cannot update pocket"})
 	}
@@ -112,20 +123,35 @@ func updateAmountFromPocketById(c echo.Context, tx *sql.Tx, pocket *pocket.Pocke
 	return pocket, nil
 }
 
-func updateAmountToPocketById(c echo.Context, tx *sql.Tx, pocket *pocket.Pocket, amount float64) (*pocket.Pocket, error) {
-	logger := mlog.L(c)
-	ctx := c.Request().Context()
+// func updateAmountFromPocketById(c echo.Context, tx *sql.Tx, pocket *pocket.Pocket, amount float64) (*pocket.Pocket, error) {
+// 	logger := mlog.L(c)
+// 	ctx := c.Request().Context()
 
-	row := tx.QueryRowContext(ctx, "UPDATE TBL_Pockets SET amount = (amount + $2) WHERE id = $1 RETURNING id, amount;", pocket.ID, amount)
-	err := row.Scan(&pocket.ID, &pocket.Amount)
-	if err != nil {
-		tx.Rollback()
-		logger.Error("cannot update pocket", zap.Error(err))
-		return nil, c.JSON(http.StatusInternalServerError, Err{Message: "cannot update pocket"})
-	}
+// 	row := tx.QueryRowContext(ctx, "UPDATE TBL_Pockets SET amount = (amount - $2) WHERE id = $1 RETURNING id, amount;", pocket.ID, amount)
+// 	err := row.Scan(&pocket.ID, &pocket.Amount)
+// 	if err != nil {
+// 		tx.Rollback()
+// 		logger.Error("cannot update pocket", zap.Error(err))
+// 		return nil, c.JSON(http.StatusInternalServerError, Err{Message: "cannot update pocket"})
+// 	}
 
-	return pocket, nil
-}
+// 	return pocket, nil
+// }
+
+// func updateAmountToPocketById(c echo.Context, tx *sql.Tx, pocket *pocket.Pocket, amount float64) (*pocket.Pocket, error) {
+// 	logger := mlog.L(c)
+// 	ctx := c.Request().Context()
+
+// 	row := tx.QueryRowContext(ctx, "UPDATE TBL_Pockets SET amount = (amount + $2) WHERE id = $1 RETURNING id, amount;", pocket.ID, amount)
+// 	err := row.Scan(&pocket.ID, &pocket.Amount)
+// 	if err != nil {
+// 		tx.Rollback()
+// 		logger.Error("cannot update pocket", zap.Error(err))
+// 		return nil, c.JSON(http.StatusInternalServerError, Err{Message: "cannot update pocket"})
+// 	}
+
+// 	return pocket, nil
+// }
 
 func getPocketById(c echo.Context, db *sql.DB, id uint) (*pocket.Pocket, error) {
 	logger := mlog.L(c)
